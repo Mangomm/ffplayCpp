@@ -1,0 +1,41 @@
+一 项目须知
+项目需求：本项目是将ffplay封装成C++形式，并且要求能播放多个实例，所以就也有必要封装成dll。
+
+环境：Qt5.14.2 + FFmpeg + SDL。
+注意最好使用该Qt版本，因为该版本自带mingw32bit、mingw64bit，而使用其他例如Qt5.10.1只有mingw32bit，它是不能链接64位的ffmpeg+SDL的dll。
+而如果你想让Qt5.10.1支持mingw64bit，只能自己单独下载mingw64软件，这个过程比较麻烦，例如版本下载错误等等，而且弄好了，后面可能出现其它奇怪的问题。所以还是
+比较建议额外下载一个Qt5.14.2版本去使用这个项目。即使再下载一个Qt5.14.2，已有的Qt版本也不会受到影响。
+qt下载地址：https://download.qt.io/archive/qt/。
+
+使用：直接运行即可，注意，main中的Init的rtsp播放路径需要更改。
+
+1. 目录说明
+1）ffplayCpp是以源码的形式进行播放。ffmpeg、SDL用的是32位的。
+2）ffplayCppDll是将ffplayCpp封装成dll的项目，支持32位和64位的ffmpeg、SDL。ffplayCppDllTest是用来测试dll的项目。
+3）win32是当ffplayCppDll以32位运行时的dll输出目录，win64是当ffplayCppDll以64位运行时的dll输出目录。
+
+2. 使用dll以及源码播放时防止黑屏要注意的事项：
+1）使用dll播放时即ffplayCppDll项目要注意：
+当使用32位的ffmpeg、SDL时，渲染时只能使用SDL_RENDERER_SOFTWARE(渲染速度变慢，延时变高)，使用SDL_RENDERER_ACCELERATED时可能会黑屏，
+这是因为32位为windows xp准备，而windows xp下只支持SDL_RENDERER_SOFTWARE参数。换成64位的ffmpeg、SDL时，使用SDL_RENDERER_ACCELERATED才不会黑屏。
+所以为了避免黑屏和渲染的延时，最好使用Qt5.14.2 + 64位的FFmpeg + SDL。
+这个项目重点是ffplayCppDll、ffplayCppDllTest，ffplayCpp可以简单用用就行。
+
+2）使用源码播放时即ffplayCpp项目要注意：
+若不使用dll形式播放，那么SDL的窗口创建和渲染应该在同一线程，否则黑屏。例如我在Init时使用SDL_CreateWindow创建了窗口，而Play时创建了一个写线程用于渲染，这样会导致黑屏。
+而当我把这个写线程去掉，即把主线程当做写线程，此时就可以播放。并且在32位的ffmpeg+SDL上，也可以使用SDL_RENDERER_ACCELERATED参数。
+根本区别可能与dll创建窗口时是使用SDL_CreateWindowFrom，而源码是使用SDL_CreateWindow创建窗口。具体可自行翻阅源码，我这里知道这种情况即可。
+综上注意点，个人还是建议使用dll去做，方便很多，并且无论是一个实例还是多个，都能去做。
+
+3. win64/win32的切换
+32位还是64位的切换很简单，在ffplayCppDll.pro以及ffplayCppDllTest.pro中，将语句 DEFINES += USE_X32 是否注释，然后换成Qt对应位数的编译器即可。
+注，ffplayCpp源码项目只支持32位，想用64位可以自行添加。
+
+4. 使用32位版本库时debug成功，直接在exe目录运行报找不到入口点的问题
+该问题原因是libstdc++-6.dll缺少导致的，可以去Qt的安装目录下的Tools的对应位数的bin目录找即可。或者在tools目录有，版本是Qt5.14.2的32位libstdc++-6.dll。
+
+
+二 功能说明
+本项目目前支持视频流、音频流、字幕流的播放，字幕流的播放需要配置视频过滤器，想不使用过滤器直接播放字幕，可以找对应的libass库去实现即可。
+但是ffplay原生的seek、播放暂停的功能并未提供接口去实现，但是不难，可自行按照需求进行开发。
+当然，本项目也会存在一些bug，例如每个线程回收是否完全等等，但是这个不重要，后续可自行优化即可。

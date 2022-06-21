@@ -1,0 +1,4 @@
+这里的dll是ffplay以及编译ffmpeg依赖的dll。
+
+并且这里的SDL2.dll与SDL2/lib/x86的SDL2.dll不一样。这里的SDL2.dll是我在编译时用的DLL，在项目使用时最好使用SDL2/lib/x86的dll，
+因为我们用的头文件是SDL2/lib/x86的dll的头文件，这能有效避免出错(虽然两个dll都能播放)。

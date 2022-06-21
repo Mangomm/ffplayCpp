@@ -1,0 +1,1 @@
+1. Clock时钟类的int *_queue_serial指针初始化，是直接指向包队列的serial的。
