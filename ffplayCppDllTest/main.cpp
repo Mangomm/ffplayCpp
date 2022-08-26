@@ -25,16 +25,16 @@ int main()
     Properties pp;
     // 一 视频属性
     // 1.1 实时流属性
-//    pp.SetProperty("play_url", "rtsp://admin:pwd@192.168.1.1/Streaming/Channels/1");
+    pp.SetProperty("play_url", "http://28.15.4.10:8000/proxy/6d_HD.live.mp4?auth_key=123456");
 //    pp.SetProperty("fflags", "nobuffer");
 //    pp.SetProperty("rtsp_transport", "tcp");
 //    pp.SetProperty("analyzeduration", "2000000");
 
     // 1.2 文件属性
-    pp.SetProperty("play_url", "./output.mkv");
+    //pp.SetProperty("play_url", "./output.mkv");
     // 添加字幕播放
     //pp.SetProperty("vf", "subtitles=\"C:\\Users\\DELL\\Desktop\\output.mkv\":si=0");// 注意，过滤器使用绝对路径时会报错，avfilter_graph_parse_ptr返回-22
-    pp.SetProperty("vf", "subtitles=./output.mkv:si=0");
+    //pp.SetProperty("vf", "subtitles=./output.mkv:si=0");
 
     // 二 音频属性
 
